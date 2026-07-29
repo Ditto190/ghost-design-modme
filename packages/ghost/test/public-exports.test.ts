@@ -56,6 +56,9 @@ describe.runIf(hasBuiltExports)("built public exports", () => {
 
     expect(core.parseSourceRef).toBeTypeOf("function");
     expect(core.sliceNodeSection).toBeTypeOf("function");
+    expect(core.materialLocator).toBeTypeOf("function");
+    expect(core.normalizeMaterial).toBeTypeOf("function");
+    expect(core.externalLocatorScheme).toBeTypeOf("function");
   });
 
   it("exposes the embedded host contract", async () => {

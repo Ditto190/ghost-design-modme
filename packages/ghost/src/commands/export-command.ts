@@ -3,7 +3,9 @@ import { dirname, resolve } from "node:path";
 import type { CAC } from "cac";
 import {
   classifyMaterialLocator,
+  externalLocatorScheme,
   type GhostCatalogNode,
+  materialLocator,
   resolveLocalMaterialLocator,
   type TransportedMaterialTier,
 } from "#ghost-core";
@@ -26,6 +28,7 @@ interface ExportAuditTravelingLocator {
   nodeId: string;
   locator: string;
   tier: Extract<TransportedMaterialTier, "bundled" | "url">;
+  access?: "https" | "connector";
 }
 
 interface ExportAuditStrandedLocator {
@@ -161,10 +164,16 @@ function auditNodeMaterials(
   travels: ExportAuditTravelingLocator[],
   stranded: ExportAuditStrandedLocator[],
 ): void {
-  for (const locator of node.materials ?? []) {
+  for (const material of node.materials ?? []) {
+    const locator = materialLocator(material);
     const classified = classifyMaterialLocator(locator);
     if (classified.kind === "url") {
-      travels.push({ nodeId: node.id, locator, tier: "url" });
+      travels.push({
+        nodeId: node.id,
+        locator,
+        tier: "url",
+        access: classified.access,
+      });
       continue;
     }
 
@@ -213,8 +222,22 @@ function formatExportMarkdown(fields: {
   if (fields.audit.travels.length > 0) {
     lines.push("Travels with the archive:", "");
     for (const item of fields.audit.travels) {
-      const label = item.tier === "url" ? "HTTPS URL" : "bundled material";
-      lines.push(`- \`${item.nodeId}\` — \`${item.locator}\` (${label})`);
+      if (item.access === "connector") {
+        const provider = externalLocatorScheme(item.locator) ?? "connector";
+        lines.push(
+          `- \`${item.nodeId}\` — \`${item.locator}\` (${provider} external locator only)`,
+          `  - The locator travels; the recipient may need a ${provider} connection or permission to access the material.`,
+        );
+      } else if (item.access === "https") {
+        lines.push(
+          `- \`${item.nodeId}\` — \`${item.locator}\` (HTTPS external locator only)`,
+          "  - The locator travels; access depends on the URL and any permissions it requires.",
+        );
+      } else {
+        lines.push(
+          `- \`${item.nodeId}\` — \`${item.locator}\` (bundled material)`,
+        );
+      }
     }
   } else {
     lines.push("Travels with the archive: none.");

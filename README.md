@@ -122,8 +122,9 @@ Use the full lockup when recognition matters. Use the glyph only when space is
 constrained or when brand presence should recede.
 ```
 
-`materials` is a list of paths or URLs pointing at the concrete stuff the
-guidance is about: repo-relative paths/globs or absolute HTTPS URLs. Components,
+`materials` points at the concrete stuff the guidance is about through
+repo-relative paths/globs or supported external references. An opaque entry may
+include a short note describing what the agent will find there. Components,
 patterns, logos, motion files, illustrations, and external asset libraries all
 use the same field. Guidance stays in prose; `materials` only says where the
 material is.

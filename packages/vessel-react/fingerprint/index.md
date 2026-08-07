@@ -1,5 +1,5 @@
 ---
-description: "Always read first: what this vendored ghost package is, what it governs, and that this repo's own nodes always win."
+context: Any task using or changing the vendored component set.
 materials:
   - "**/styles/main.css"
 ---

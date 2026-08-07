@@ -1,5 +1,5 @@
 ---
-description: "Editorial and landing surfaces — gather for heroes, marketing pages, pull quotes, and full-bleed dark moments; inverts product type restraint."
+context: Heroes, marketing pages, pull quotes, or full-bleed dark moments.
 materials:
   - materials/ref/composition.editorial.html
   - materials/tokens.css

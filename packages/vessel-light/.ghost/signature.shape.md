@@ -1,5 +1,5 @@
 ---
-description: "Gather before setting any radius or corner treatment. The shape dial: controls take --radius-control, surfaces take --radius-surface — this brand's current answer is pills on controls and a 20px signature radius on surfaces."
+context: Choosing or implementing any radius or corner treatment.
 materials:
   - materials/tokens.css
   - materials/primitives.css

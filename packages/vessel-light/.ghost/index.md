@@ -1,5 +1,5 @@
 ---
-description: "Always read first: Vessel's design language as a raw HTML/CSS steering packet for agents."
+context: Any task using the complete Vessel design language.
 materials:
   - materials/tokens.css
 ---

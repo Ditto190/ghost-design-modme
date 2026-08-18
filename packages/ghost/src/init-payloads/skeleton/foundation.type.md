@@ -2,6 +2,9 @@
 context: Any view containing text.
 ---
 
+Starter guidance the brand owner has not yet reviewed. Cite it as provisional
+until a human edits or confirms this chapter.
+
 ## Usage
 
 Hierarchy is a closed vocabulary, not a size slider. Every piece of text

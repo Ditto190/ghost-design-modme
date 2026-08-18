@@ -8,41 +8,66 @@ import {
 import { resolveGhostPackage } from "../package.js";
 import { loadGhostPackage } from "../scan/fingerprint-package.js";
 import { exitCli, failFromError } from "./errors.js";
+import {
+  buildStatsObservations,
+  formatStatsObservation,
+  type StatsObservation,
+} from "./stats-observations.js";
 
-export function registerPulseCommand(cli: CAC): void {
-  cli
-    .command("pulse", "Summarize local gather/pull events from .ghost/.events.")
-    .option(
-      "--package <dir>",
-      "Use this ghost package directory (default: ./.ghost)",
-    )
-    .option("--format <fmt>", "Output format: markdown or json", {
-      default: "markdown",
-    })
-    .action(async (opts) => {
-      try {
-        if (opts.format !== "markdown" && opts.format !== "json") {
-          console.error("Error: --format must be 'markdown' or 'json'");
-          await exitCli(2);
-          return;
-        }
+export function registerStatsCommand(cli: CAC): void {
+  const options = (command: ReturnType<CAC["command"]>) =>
+    command
+      .option(
+        "--package <dir>",
+        "Use this ghost package directory (default: ./.ghost)",
+      )
+      .option("--format <fmt>", "Output format: markdown or json", {
+        default: "markdown",
+      });
 
-        const paths = resolveGhostPackage(opts.package, process.cwd());
-        const loaded = await loadGhostPackage(paths);
-        const menu = buildCatalogMenu(loaded.catalog);
-        const events = await readGhostEvents(paths.packageDir);
-        const report = buildPulseReport(events, menu);
+  options(
+    cli.command(
+      "stats",
+      "Summarize local gather/pull events from .ghost/.events.",
+    ),
+  ).action(async (opts) => {
+    await runStats(opts);
+  });
 
-        if (opts.format === "json") {
-          process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-        } else {
-          process.stdout.write(formatPulseMarkdown(report));
-        }
-        await exitCli(0);
-      } catch (err) {
-        await failFromError(err);
-      }
-    });
+  options(cli.command("pulse", "Deprecated alias for `ghost stats`.")).action(
+    async (opts) => {
+      process.stderr.write("ghost pulse is deprecated; use `ghost stats`.\n");
+      await runStats(opts);
+    },
+  );
+}
+
+async function runStats(opts: {
+  package?: string;
+  format?: string;
+}): Promise<void> {
+  try {
+    if (opts.format !== "markdown" && opts.format !== "json") {
+      console.error("Error: --format must be 'markdown' or 'json'");
+      await exitCli(2);
+      return;
+    }
+
+    const paths = resolveGhostPackage(opts.package, process.cwd());
+    const loaded = await loadGhostPackage(paths);
+    const menu = buildCatalogMenu(loaded.catalog);
+    const events = await readGhostEvents(paths.packageDir);
+    const report = buildStatsReport(events, menu);
+
+    if (opts.format === "json") {
+      process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    } else {
+      process.stdout.write(formatStatsMarkdown(report));
+    }
+    await exitCli(0);
+  } catch (err) {
+    await failFromError(err);
+  }
 }
 
 type NodeHitReport = {
@@ -71,8 +96,8 @@ type ConcretenessReport = {
   proseOnly: { exposures: number; pulls: number; hitRate: number };
 };
 
-type PulseReport = {
-  kind: "pulse";
+type StatsReport = {
+  kind: "stats";
   events: number;
   gathers: number;
   pulls: number;
@@ -83,12 +108,13 @@ type PulseReport = {
   coldNodes: string[];
   misses: MissReport[];
   concreteness: ConcretenessReport;
+  observations: StatsObservation[];
 };
 
-function buildPulseReport(
+function buildStatsReport(
   events: GhostObservabilityEvent[],
   currentMenu: CatalogMenuEntry[],
-): PulseReport {
+): StatsReport {
   const exposureCounts = new Map<string, number>();
   const pullCounts = new Map<string, number>();
   const missCounts = new Map<
@@ -120,13 +146,15 @@ function buildPulseReport(
       continue;
     }
 
-    pulls += 1;
-    if (sawGather) activeGatherHasPull = true;
-    for (const id of event.ids) {
-      pullCounts.set(id, (pullCounts.get(id) ?? 0) + 1);
-    }
-    for (const miss of event.missed ?? []) {
-      recordMiss(missCounts, miss);
+    if (event.event === "pull") {
+      pulls += 1;
+      if (sawGather) activeGatherHasPull = true;
+      for (const id of event.ids) {
+        pullCounts.set(id, (pullCounts.get(id) ?? 0) + 1);
+      }
+      for (const miss of event.missed ?? []) {
+        recordMiss(missCounts, miss);
+      }
     }
   }
 
@@ -172,7 +200,7 @@ function buildPulseReport(
   const concreteness = buildConcretenessReport(nodes, nodeConcrete);
 
   return {
-    kind: "pulse",
+    kind: "stats",
     events: events.length,
     gathers,
     pulls,
@@ -205,6 +233,7 @@ function buildPulseReport(
         (a, b) => b.count - a.count || a.requested.localeCompare(b.requested),
       ),
     concreteness,
+    observations: buildStatsObservations(events),
   };
 }
 
@@ -254,9 +283,9 @@ function recordMiss(
   missCounts.set(miss.requested, existing);
 }
 
-function formatPulseMarkdown(report: PulseReport): string {
+function formatStatsMarkdown(report: StatsReport): string {
   const lines: string[] = [
-    "# ghost Pulse",
+    "# ghost Stats",
     "",
     `- Events: ${report.events}`,
     `- Gathers: ${report.gathers}`,
@@ -321,6 +350,18 @@ function formatPulseMarkdown(report: PulseReport): string {
           ? ` — suggested: ${miss.suggested.map((s) => `\`${s}\``).join(", ")}`
           : "";
       lines.push(`- \`${miss.requested}\` × ${miss.count}${suggestions}`);
+    }
+  }
+
+  lines.push("", "## Sequence observations", "");
+  lines.push(
+    "Observations, not violations; nothing blocks or refuses on this.",
+  );
+  if (report.observations.length === 0) {
+    lines.push("None.");
+  } else {
+    for (const observation of report.observations) {
+      lines.push(`- ${formatStatsObservation(observation)}`);
     }
   }
 

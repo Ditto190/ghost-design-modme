@@ -7,7 +7,10 @@ import { exitCli, failFromError } from "./errors.js";
 
 export function registerInitCommand(cli: CAC): void {
   cli
-    .command("init", "Create a root .ghost package of nodes")
+    .command(
+      "init",
+      "Scaffold .ghost/ with the starter package: manifest, glossary, a brand cover, foundation chapters, and context nodes.",
+    )
     .option("--package <dir>", "Exact ghost package directory to initialize")
     .option(
       "--template <name>",
@@ -46,7 +49,7 @@ export function registerInitCommand(cli: CAC): void {
           typeof opts.body === "string" ? getInitBody(opts.body) : undefined;
         if (body?.includesChecks && withIds.includes("checks")) {
           throw new UsageError(
-            `--with checks is redundant with --body ${body.name} — this body already includes its own checks/.`,
+            `--with checks is redundant with --body ${body.name}: this body already includes its own checks/.`,
           );
         }
 

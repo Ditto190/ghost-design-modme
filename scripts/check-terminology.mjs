@@ -84,6 +84,8 @@ const FORBIDDEN_PHRASES = [
   "prose truths",
   "product truth",
   "app truth",
+  "skeleton starter",
+  "drift bill",
 ];
 
 /**

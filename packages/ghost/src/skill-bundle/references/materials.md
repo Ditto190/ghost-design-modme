@@ -1,5 +1,5 @@
 ---
-name: concrete
+name: materials
 description: Bind ghost guidance to concrete material in formats agents can use directly.
 ---
 
@@ -101,7 +101,7 @@ Use external locators when the authoritative material remains external. Add a
 short `note` only when the locator itself does not tell the agent what it will
 find.
 
-## Drift bill
+## Copies drift
 
 Concrete material repeats decisions from the prose. After changing guidance,
 tokens, or component contracts, sweep Skeletons, components, examples, and

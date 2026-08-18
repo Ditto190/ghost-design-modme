@@ -2,6 +2,9 @@
 context: Any view with actions or inputs.
 ---
 
+Starter guidance the brand owner has not yet reviewed. Cite it as provisional
+until a human edits or confirms this chapter.
+
 ## Usage
 
 The control emphasis ladder is exactly five rungs: primary, secondary,

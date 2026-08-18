@@ -2,6 +2,9 @@
 context: Laying out any view.
 ---
 
+Starter guidance the brand owner has not yet reviewed. Cite it as provisional
+until a human edits or confirms this chapter.
+
 ## Usage
 
 All layout is stacks. Rhythm comes from relationships between siblings, not

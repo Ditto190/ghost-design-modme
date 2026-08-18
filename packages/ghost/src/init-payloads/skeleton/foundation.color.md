@@ -2,6 +2,9 @@
 context: Choosing or applying color.
 ---
 
+Starter guidance the brand owner has not yet reviewed. Cite it as provisional
+until a human edits or confirms this chapter.
+
 ## Usage
 
 Color is assigned by role, not by taste. The roles are the source of truth;

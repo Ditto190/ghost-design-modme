@@ -1,5 +1,5 @@
 ---
-context: Transactional email only.
+for: Transactional email only.
 materials:
   - materials/examples/email.html
 ---

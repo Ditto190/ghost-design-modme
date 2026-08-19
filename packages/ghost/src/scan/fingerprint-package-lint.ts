@@ -80,7 +80,7 @@ export async function lintGhostPackage(
       await lintGlossary(paths.glossary, issues);
       lintCover(manifest.cover, catalog, issues);
       await lintKindPrefixes(paths, catalog, issues);
-      lintNodeContexts(catalog, issues);
+      lintNodeForPayloads(catalog, issues);
       lintSkeletonSections(catalog, issues);
       await lintMaterialLocators(paths, catalog, issues, cwd);
       lintCheckReferences(catalog, checks, issues);
@@ -187,28 +187,20 @@ async function lintKindPrefixes(
 }
 
 /**
- * `context` is a node's entire retrieval payload: `gather` lists it as the text
- * the agent selects against. A node without one renders as a bare id and cannot
- * show when it applies, so `validate` makes that loud. `description` remains a
- * read alias for one release and produces a migration warning.
+ * `for` is a node's entire retrieval payload: `gather` lists it as the text
+ * the agent selects against. A node without one renders as a bare id and
+ * cannot show when it applies, so `validate` makes that loud.
  */
-function lintNodeContexts(catalog: GhostCatalog, issues: LintIssue[]): void {
+function lintNodeForPayloads(catalog: GhostCatalog, issues: LintIssue[]): void {
   for (const node of catalog.nodes.values()) {
-    if (node.usesDeprecatedDescription) {
-      issues.push({
-        severity: "warning",
-        rule: "node-description-deprecated",
-        message:
-          "node uses deprecated `description`; rename it to `context` (the retrieval payload shown by `gather`)",
-        path: `${node.id}.md.description`,
-      });
+    if (node.for !== undefined && node.for.trim().length > 0) {
+      continue;
     }
-    if (node.context !== undefined && node.context.trim().length > 0) continue;
     issues.push({
       severity: "warning",
-      rule: "node-context-missing",
+      rule: "node-for-missing",
       message:
-        "node has no `context`, so `gather` lists it as a bare id without applicability context; add one line naming the observable condition under which this node applies",
+        "node has no `for`, so `gather` lists it as a bare id without applicability context; add one line naming the situation or activity this guidance is for",
       path: `${node.id}.md`,
     });
   }

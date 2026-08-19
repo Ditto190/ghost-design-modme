@@ -40,15 +40,21 @@ const AnnotatedMaterialSchema = z
  *
  * Validates a node in isolation. Identity and containment are not here: they
  * come from the node's file path. Kind is the filename prefix, never a
- * frontmatter field. `description` is accepted as a deprecated read alias for
- * `context`; consumers resolve `context` first when both are present.
+ * frontmatter field.
  */
 export const GhostNodeFrontmatterSchema = z
   .object({
-    context: z.string().min(1).optional(),
-    description: z.string().min(1).optional(),
+    for: z.string().min(1).optional(),
     materials: z
       .array(z.union([MaterialLocatorSchema, AnnotatedMaterialSchema]))
+      .optional(),
+    // The retrieval payload field is `for`. Reject near-miss keys that would
+    // otherwise ride along silently and leave the node invisible to gather.
+    context: z
+      .never({ message: "`context` is not a node key; use `for`" })
+      .optional(),
+    description: z
+      .never({ message: "`description` is not a node key; use `for`" })
       .optional(),
     // `relates` (and all typed edges) were removed. Reject it with a message
     // that names the key so authors get a clear signal.

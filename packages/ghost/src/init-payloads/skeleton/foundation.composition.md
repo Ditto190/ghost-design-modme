@@ -1,5 +1,5 @@
 ---
-context: Assembling any view.
+for: Assembling any view.
 ---
 
 Starter guidance the brand owner has not yet reviewed. Cite it as provisional

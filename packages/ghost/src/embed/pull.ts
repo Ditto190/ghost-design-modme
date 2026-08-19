@@ -67,9 +67,7 @@ export async function pullGhostNodes(
     nodes: pulledNodes.map(({ node, materials }) => ({
       id: node.id,
       ...(node.kind !== undefined ? { kind: node.kind } : {}),
-      ...(node.context
-        ? { context: node.context, description: node.context }
-        : {}),
+      ...(node.for ? { for: node.for } : {}),
       ...(node.materials !== undefined
         ? { declaredMaterials: [...node.materials] }
         : {}),

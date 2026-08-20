@@ -25,8 +25,8 @@ ghost review
 
 ## Structure
 
-The corpus is factored by rate of change under adaptation: `grammar.*` nodes are value-free decision logic that survives any adaptation; `signature.*` nodes are the identity dials (shape, palette, type, temperature), each stating Vessel's current answer; `register.*` nodes are named conditions that re-tune the contract; `anti-goal.median` is the model's measured defaults (prune lines your brand legitimately violates) and `anti-goal.tells` guards near-misses of Vessel's own signature. Every literal value lives in `materials/tokens.css`.
+The corpus is factored by rate of change under adaptation: `foundation.*` nodes carry Vessel's load-bearing decisions — value-free decision logic that survives any adaptation, plus the identity dials (shape, palette, type, temperature), each stating Vessel's current answer; `context.*` nodes are named situations that re-tune the contract; `standard.model-defaults` is the model's measured shared defaults (prune lines your brand legitimately violates) and `foundation.tells` guards near-misses of Vessel's own signature. Every literal value lives in `materials/tokens.css`.
 
 ## Curation
 
-Each example says what to keep and what to change. Together they demonstrate every closed set the grammar enumerates: the emphasis ladder, text variants, tones, and elevation tiers. Regenerate examples whenever tokens or signature nodes change. Add one when repeated work proves a gap, not because a surface might exist someday.
+Each example says what to keep and what to change. Together they demonstrate every closed set the foundations enumerate: the emphasis ladder, text variants, tones, and elevation tiers. Regenerate examples whenever tokens or answered foundation values change. Add one when repeated work proves a gap, not because a surface might exist someday.

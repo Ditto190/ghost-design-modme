@@ -89,18 +89,19 @@ function formatMenuMarkdown(menu: GhostGatherResult): string {
   }
 
   const lines: string[] = [
-    "# Guidance for this task",
+    "# Guidance menu",
     "",
-    `Task: ${menu.ask}`,
+    "This is the complete, unfiltered menu. For the task below, check every `Applies when` condition and pull every applicable ID. The entries have not been selected or ranked.",
     "",
-  ];
-
-  lines.push(
+    "## Task",
+    "",
+    menu.ask,
+    "",
     "## Available guidance",
     "",
-    "Check every item below. Pull all applicable IDs together with `ghost pull <id> [<id>…]`. If no listed guidance applies, run bare `ghost pull` to receive the cover and uncovered-guidance policy. Skip clear non-matches; topic overlap alone is not enough. Do not limit the number.",
+    "Pull the applicable IDs together with `ghost pull <id> [<id>…]`. If no listed guidance applies, run bare `ghost pull` to receive the cover and uncovered-guidance policy. Skip clear non-matches; topic overlap alone is not enough. Do not limit the number.",
     "",
-  );
+  ];
 
   const groups = groupMenuByKind(menu.nodes, menu.kinds ?? []);
   for (const group of groups) {
